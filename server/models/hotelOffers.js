@@ -23,8 +23,8 @@ const getHotelOffers = async (cityCode, callback) => {
     const hotels = [];
 
     /* unsplash api call */
-    const city = "LONDON";
-    const query = `${city} hotel`;
+    const { cityName } = hotelsData.result.data[0].hotel.address;
+    const query = `${cityName} hotel`;
     const { data: response } = await axios.get(
       `https://api.unsplash.com/search/photos?query=${query}&client_id=${unsplashKeys.access_key}`
     );
