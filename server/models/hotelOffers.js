@@ -1,23 +1,59 @@
-//var amadeus = require('./amadeus.js');
+/* eslint-disable no-restricted-syntax */
+const axios = require("axios");
+const amadeus = require("./aamadeus.js");
+const fixer = require("./fixer.js");
+const unsplashKeys = require("./unsplash.js");
 
-var Amadeus = require('amadeus');
+const getHotelOffers = async (cityCode, callback) => {
+  try {
+    /* amadeus api call */
+    const hotelsData = await amadeus.shopping.hotelOffers.get(cityCode);
 
-var amadeus = new Amadeus({
-  clientId: 'qo02oOj99hJDCmBYFvnT2OF5kcpxzSu2',
-  clientSecret: 'YjZSzNSiMMtwr0Qp',
-  logLevel: 'debug'
-});
+    /* fixer.io api call */
+    const currencies = await axios.get("http://data.fixer.io/api/latest", {
+      params: {
+        access_key: fixer.token,
+      },
+    });
 
-// Book a hotel in LON for 2020-10-10 to 2020-10-12
-var getHotelOffers = (cityCode, callback) => {
-  amadeus.shopping.hotelOffers.get(cityCode).then((response) => {
+    const { currency } = hotelsData.result.data[0].offers[0].price;
+    const USDtoEUR = currencies.data.rates.USD;
+    const foreignCurrToEUR = currencies.data.rates[currency];
+    const exchangeRate = USDtoEUR / foreignCurrToEUR;
+    const hotels = [];
 
-    console.log("here", response);
-    callback(response.result);
-  }).catch((response) => {
-    console.log(response);
-    callback(response);
-  })
-}
+    /* unsplash api call */
+    const city = "LONDON";
+    const query = `${city} hotel`;
+    const { data: response } = await axios.get(
+      `https://api.unsplash.com/search/photos?query=${query}&client_id=${unsplashKeys.access_key}`
+    );
 
-module.exports = { getHotelOffers }
+    const images = response.results;
+    let counter = 0;
+    for (const hotelObj of hotelsData.result.data) {
+      const hotel = {};
+      hotel.type = hotelObj.hotel.type;
+      hotel.name = hotelObj.hotel.name;
+      const hotelDescription = hotelObj.hotel.description;
+      hotel.description = hotelDescription ? hotelDescription.text : null;
+      const hotelOffers = hotelObj.offers[0];
+      const hotelRoom = hotelOffers.room;
+      const hotelGuests = hotelOffers.guests;
+      const hotelPrice = hotelOffers.price;
+      hotel.checkInDate = hotelOffers.checkInDate;
+      hotel.checkOutDate = hotelOffers.checkOutDate;
+      hotel.roomDescription = hotelRoom ? hotelRoom.description.text : null;
+      hotel.guests = hotelGuests ? hotelGuests.adults : null;
+      hotel.price = Number((hotelPrice.total * exchangeRate).toFixed(2));
+      hotel.image = images[counter].urls;
+      hotels.push(hotel);
+      counter += 1;
+    }
+    callback(null, hotels);
+  } catch (error) {
+    callback(error, null);
+  }
+};
+
+module.exports = { getHotelOffers };

@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+aamadeus.js
+fixer.js
+unsplash.js
+
+=1.13.0

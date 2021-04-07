@@ -1,14 +1,13 @@
-const models = require('/Users/kanchanchauhan/Documents/sei/blueocean/HotelsAPI/server/models/index.js');
+const models = require("../models/index.js");
 
 const getHotelOffers = (req, res) => {
-  console.log(req.query)
-  models.hotelOffers.getHotelOffers(req.query, (err, data) => {
-    if(err){
+  models.hotelOffers.getHotelOffers(req.query, (err, hotelsData) => {
+    if (err) {
       res.status(404);
     } else {
-      res.send(data);
+      res.send(hotelsData);
     }
-  })
+  });
 };
 
-module.exports = { getHotelOffers }
+module.exports = { getHotelOffers };
