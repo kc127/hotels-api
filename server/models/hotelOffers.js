@@ -46,7 +46,7 @@ const getHotelOffers = async (cityCode, callback) => {
       hotel.roomDescription = hotelRoom ? hotelRoom.description.text : null;
       hotel.guests = hotelGuests ? hotelGuests.adults : null;
       hotel.price = Number((hotelPrice.total * exchangeRate).toFixed(2));
-      hotel.image = images[counter].urls;
+      hotel.image = images[counter].urls.small;
       hotels.push(hotel);
       counter += 1;
     }
