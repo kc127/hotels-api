@@ -1,10 +1,9 @@
-const express = require('express');
+const express = require("express");
+
 const router = express.Router();
 
-const controllers = require('/Users/kanchanchauhan/Documents/sei/blueocean/HotelsAPI/server/controllers/index.js');
+const controllers = require("./controllers/index.js");
 
-
-router.get('/v2/shopping/hotel-offers', controllers.hotelOffers.getHotelOffers)
-
+router.get("/hotels/v2/shopping/hotel-offers", controllers.hotelOffers.getHotelOffers);
 
 module.exports = router;
