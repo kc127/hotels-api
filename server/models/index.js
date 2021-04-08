@@ -1,2 +1,1 @@
-exports.hotelOffers = require('./hotelOffers.js');
-
+exports.hotelOffers = require("./hotelOffers.js");
