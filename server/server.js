@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const router = require('./routes.js');
 
 const app = express();
-const PORT = 3002;
+const PORT = 4000;
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));
